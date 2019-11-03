@@ -17,11 +17,10 @@ SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),c);
 
 char mapa[7][14];
 struct coordenada monstros[3];
-int px, py;
+int px, py,flag=0;
 
 void randomizaMonstro(){
-    int i=0,j,k=0,AUX,vet[3]={10,10,10};
-    srand (time(NULL));
+    int i,j,k=0,AUX,AUX1;
     for(i=0;i<=2;){
         AUX = (rand()%6);
         monstros[i].x = AUX;
@@ -31,7 +30,8 @@ void randomizaMonstro(){
             }
         }
         if(k < 2){
-            if((i%2) == 0){
+            AUX1 = (rand()%2);
+            if(AUX1 == 0){
                 monstros[i].y = 13;
                 monstros[i].deslocamento = -1;
             }
@@ -58,6 +58,15 @@ void movimentaMonstro(){
             if(monstros[i].y == 13){
                 monstros[i].deslocamento = -1;
             }
+        }
+    }
+}
+
+void verificaColisoes(){
+    int i;
+    for(i=0;i<=2;i++){
+        if((monstros[i].x == px)&&(monstros[i].y == py)){
+            flag = 1;
         }
     }
 }
@@ -108,6 +117,7 @@ void mostra_Mapa(){
 main(){
     char tecla;
     px = py = 3;
+    srand (time(NULL));
     inicia_Mapa();
     mapa[px][py]='\0';
     Moldura();
@@ -132,6 +142,6 @@ main(){
         }
         mapa[px][py] = 'P';
         movimentaMonstro();
-        //verificaColisoes();
-    }while(tecla != 27);
+        verificaColisoes();
+    }while((tecla != 27)&&(flag != 1));
 }
