@@ -18,7 +18,7 @@ SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),c);
 
 char mapa[7][14];
 struct coordenada monstros[4];
-int px, py,flag=0;
+int px, py,x,y,flag=0,flag2=0;
 
 void randomizaMonstro(){
     int i,j,k=0,AUX,AUX1;
@@ -79,6 +79,30 @@ void verificaColisoes(){
     }
 }
 
+void tiroBarco(){
+    char bomba='*';
+    if(flag2==0){
+        if((monstros[0].y)==(py)){
+            x = monstros[0].x;
+            y = monstros[0].y;
+            mapa[x+1][y] = bomba;
+            flag2=1;
+        }
+    }
+    else{
+        if(x<=6){
+           x++;
+           mapa[x][y] = bomba;
+           mapa[x-1][y] = '°';
+        }
+    }
+    if(x==6){
+            mapa[x][y]='°';
+            x=0;
+            flag2=0;
+        }
+}
+
 void inicia_Mapa(){
     int l, c;
     for(l=0;l<7;l++){
@@ -125,7 +149,8 @@ void mostra_Mapa(){
 main(){
     char tecla;
     int cont=0;
-    px = py = 3;
+    px = 3;
+    py = 6;
     srand (time(NULL));
     inicia_Mapa();
     mapa[px][py]='\0';
@@ -155,8 +180,11 @@ main(){
         for(cont=0;cont<=16450000;cont++){
             if(cont%16450000000==0){
                 movimentaMonstro();
+                tiroBarco();
             }
         }
+        gotoxy(1, 1);
+        printf("%d\n%d",x,y);
         verificaColisoes();
     }while((tecla != 27)&&(flag != 1));
 }
