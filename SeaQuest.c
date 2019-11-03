@@ -19,7 +19,6 @@ char mapa[7][14];
 struct coordenada monstros[3];
 int px, py;
 
-
 void randomizaMonstro(){
     int i;
     srand (time(NULL));
@@ -37,15 +36,19 @@ void randomizaMonstro(){
 }
 
 void movimentaMonstro(){
-    int i,x,y,des;
+    int i;
     for(i=0;i<=2;i++){
-        x = monstros[i].x;
-        y = monstros[i].y;
-        des = monstros[i].deslocamento;
-        y = y + (des);
-        monstros[i].y = y;
-        mapa[x][y] = 'T';
-        mapa[x][y-(des)] = '°';
+        monstros[i].y += (monstros[i].deslocamento);
+        mapa[monstros[i].x][monstros[i].y] = 'T';
+        mapa[monstros[i].x][monstros[i].y - (monstros[i].deslocamento)] = '°';
+        if(monstros[i].y == 0){
+            monstros[i].deslocamento = 1;
+        }
+        else{
+            if(monstros[i].y == 13){
+                monstros[i].deslocamento = -1;
+            }
+        }
     }
 }
 
@@ -104,16 +107,16 @@ main(){
         tecla = getch();
         mapa[px][py] = '°';
         switch(tecla){
-            case 'w': if((px>0)&&(py>=0)){
+            case 'w': if(px>0){
                 px--;
             } break;
-            case 's': if((px<6)&&(py<=13)){
+            case 's': if(px<6){
                 px++;
             } break;
-            case 'd': if((px>=0)&&(py<13)){
+            case 'd': if(py<13){
                 py++;
             } break;
-            case 'a': if((px>=0)&&(py>0)){
+            case 'a': if(py>0){
                 py--;
             } break;
         }
