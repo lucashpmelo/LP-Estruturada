@@ -3,7 +3,7 @@
 #include <windows.h>
 #include <conio.h>
 #include <time.h>
-#include <conio.c>
+//#include <conio.c>
 //#include "conio.c"
 //#include <conio2.h>
 
@@ -51,9 +51,9 @@ void HideCursor()
   SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursor);
 }
 
-char mapa[10][20];
+char mapa[10][20],barra[21]={178, 178, 178, 178, 178, 178, 178, 178, 178, 178, 178, 178, 178, 178, 178, 178, 178, 178, 178, 178, '\0'};
 struct coordenada monstros[4];
-int px, py,x,y,flag=0,flag2=0;
+int px, py,x,y,mx,my,ContM=0,Oxi=200;flag=0,flag2=0,flag3=0;
 
 void randomizaMonstro(){
     int i,j,k=0,AUX,AUX1;
@@ -63,7 +63,7 @@ void randomizaMonstro(){
                 monstros[i].x = 0;
                 monstros[i].tipo = 'B';
                 break;
-            case 1:
+            default :
                 monstros[i].tipo = 'T';
                 AUX = (rand()%10);
                 monstros[i].x = AUX;
@@ -73,15 +73,6 @@ void randomizaMonstro(){
                     }
                 }
                 break;
-            default:
-                monstros[i].tipo = 'S';
-                AUX = (rand()%10);
-                monstros[i].x = AUX;
-                for(j=0;j<=3;j++){
-                    if((AUX == monstros[j].x)||(AUX == 0)){
-                        k++;
-                    }
-                }
         }
         if(k < 2){
             AUX1 = (rand()%2);
@@ -118,6 +109,12 @@ void verificaColisoes(){
             flag = 1;
         }
     }
+    if(mapa[px][py]=='*'){
+        flag = 1;
+    }
+    if(Oxi==0){
+        flag=1;
+    }
 }
 
 void tiroBarco(){
@@ -144,10 +141,57 @@ void tiroBarco(){
         }
 }
 
+void contOxigenio(){
+    int i,j;
+    if(px==0){
+        if(Oxi<=180){
+            Oxi+=40;
+            for(j=Oxi/10;j>1;j--){
+                barra[j]=178;
+            }
+        }
+    }
+    else{
+        if(Oxi>=10){
+            Oxi-=10;
+            for(j=Oxi/10;j<=20;j++){
+                barra[j]=255;
+            }
+        }
+    }
+    for(i=0;i<=20;i++){
+            gotoxy(40, 19);
+            printf("Oxigenio\n");
+            gotoxy(33, 20);
+            printf("%s",barra);
+            gotoxy(54, 20);
+            printf(" ");
+            gotoxy(55, 20);
+            printf(" ");
+    }
+}
+
+void Mergulhador(){
+    if(flag3==0){
+        do{
+            mx = (rand()%10);
+        }while(mx == 0);
+        my = (rand()%20);
+        flag3=1;
+    }
+    mapa[mx][my] = 'M';
+    if((px==mx)&&(py==my)){
+        ContM++;
+        flag3=0;
+    }
+    gotoxy(33, 22);
+    printf("Mergulhadores:%d",ContM);
+}
+
 void sea(){
 
     gotoxy(35, 8);
-    system("color 03");
+    //system("color 03");
     printf("///// ///// ///// \n");
     gotoxy(35, 9);
     printf("//    //    // // \n");
@@ -161,7 +205,7 @@ void sea(){
     printf("   // //    // //          \n");
     gotoxy(35, 14);
     printf("///// ///// // //            \n");
-    Sleep(3000);
+    Sleep(1000);
     inicia_Mapa();
 }
 
@@ -201,10 +245,10 @@ void mostra_Mapa(){
             gotoxy(33+i, 18);
             printf("%c", 205); // ═
             if(i<=9){
-            gotoxy(32, 8+i);
-            printf("%c", 186); // ║
-            gotoxy(53, 8+i);
-            printf("%c", 186); // ║
+                gotoxy(32, 8+i);
+                printf("%c", 186); // ║
+                gotoxy(53, 8+i);
+                printf("%c", 186); // ║
             }
         }
     }
@@ -244,12 +288,12 @@ main(){
         if(cont%10==0){
            movimentaMonstro();
            tiroBarco();
+           contOxigenio();
            cont=0;
         }
         cont++;
-        gotoxy(1, 1);
-        printf("%d\n%d",x,y);
         verificaColisoes();
+        Mergulhador();
         HideCursor();
     }while((tecla != 27)&&(flag != 1));
 }
