@@ -3,11 +3,40 @@
 #include <windows.h>
 #include <conio.h>
 #include <time.h>
+#include <conio.c>
+//#include "conio.c"
+//#include <conio2.h>
 
 struct coordenada {
     int x, y, deslocamento;
     char tipo;
 };
+
+void menu(){
+    int tecla;
+    do{
+        printf("\n");
+        printf("1) Pressione '1' para INICIAR.  \n");
+        printf("2) Pressione '2' para ver o RANK.  \n");
+        printf("3) Pressione '3' para SAIR.  \n");
+        tecla=getch();
+        switch(tecla){
+                    case '1':
+                    sea();
+                 break;
+
+                  case '3':
+                exit(3);
+                return 0;
+                  default:
+                    menu();
+        }
+                 //break;}
+// }while((tecla != '1')||(tecla != '2')||(tecla != '3'));
+  }while(tecla = 0);
+
+}
+
 
 void gotoxy (int x, int y){
 COORD c;
@@ -16,31 +45,48 @@ c.Y = y-1;
 SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),c);
 }
 
-char mapa[7][14];
+void HideCursor()
+{
+  CONSOLE_CURSOR_INFO cursor = {1, FALSE};
+  SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursor);
+}
+
+char mapa[10][20];
 struct coordenada monstros[4];
 int px, py,x,y,flag=0,flag2=0;
 
 void randomizaMonstro(){
     int i,j,k=0,AUX,AUX1;
     for(i=0;i<=3;){
-        if(i == 0){
-            monstros[i].x = 0;
-            monstros[i].tipo = 'B';
-        }
-        else{
-            monstros[i].tipo = 'T';
-            AUX = (rand()%7);
-            monstros[i].x = AUX;
-            for(j=0;j<=3;j++){
-                if((AUX == monstros[j].x)||(AUX == 0)){
-                    k++;
+        switch(i){
+            case 0:
+                monstros[i].x = 0;
+                monstros[i].tipo = 'B';
+                break;
+            case 1:
+                monstros[i].tipo = 'T';
+                AUX = (rand()%10);
+                monstros[i].x = AUX;
+                for(j=0;j<=3;j++){
+                    if((AUX == monstros[j].x)||(AUX == 0)){
+                        k++;
+                    }
                 }
-            }
+                break;
+            default:
+                monstros[i].tipo = 'S';
+                AUX = (rand()%10);
+                monstros[i].x = AUX;
+                for(j=0;j<=3;j++){
+                    if((AUX == monstros[j].x)||(AUX == 0)){
+                        k++;
+                    }
+                }
         }
         if(k < 2){
             AUX1 = (rand()%2);
             if(AUX1 == 0){
-                monstros[i].y = 13;
+                monstros[i].y = 19;
                 monstros[i].deslocamento = -1;
             }
             else{
@@ -57,14 +103,9 @@ void movimentaMonstro(){
     int i;
     for(i=0;i<=3;i++){
         monstros[i].y += (monstros[i].deslocamento);
-        if(i == 0){
-            mapa[monstros[i].x][monstros[i].y] = 'B';
-        }
-        else{
-            mapa[monstros[i].x][monstros[i].y] = 'T';
-        }
+        mapa[monstros[i].x][monstros[i].y] = monstros[i].tipo;
         mapa[monstros[i].x][monstros[i].y - (monstros[i].deslocamento)] = '°';
-        if((monstros[i].y == 0)||(monstros[i].y == 13)){
+        if((monstros[i].y == 0)||(monstros[i].y == 19)){
             monstros[i].deslocamento *= -1;
         }
     }
@@ -90,23 +131,45 @@ void tiroBarco(){
         }
     }
     else{
-        if(x<=6){
+        if(x<=9){
            x++;
            mapa[x][y] = bomba;
            mapa[x-1][y] = '°';
         }
     }
-    if(x==6){
+    if(x==9){
             mapa[x][y]='°';
             x=0;
             flag2=0;
         }
 }
 
+void sea(){
+
+    gotoxy(35, 8);
+    system("color 03");
+    printf("///// ///// ///// \n");
+    gotoxy(35, 9);
+    printf("//    //    // // \n");
+    gotoxy(35, 10);
+    printf("//    //    // //   \n");
+    gotoxy(35, 11);
+    printf("///// ///// /////     \n");
+    gotoxy(35, 12);
+    printf("   // //    // //  \n");
+    gotoxy(35, 13);
+    printf("   // //    // //          \n");
+    gotoxy(35, 14);
+    printf("///// ///// // //            \n");
+    Sleep(3000);
+    inicia_Mapa();
+}
+
 void inicia_Mapa(){
+    close(menu);
     int l, c;
-    for(l=0;l<7;l++){
-        for(c=0;c<14;c++){
+    for(l=0;l<10;l++){
+        for(c=0;c<20;c++){
             mapa[l][c] = '°';
         }
     }
@@ -114,8 +177,8 @@ void inicia_Mapa(){
 
 void mostra_Mapa(){
     int l, c;
-    for(l=0;l<7;l++){
-        for(c=0;c<14;c++){
+    for(l=0;l<10;l++){
+        for(c=0;c<20;c++){
             gotoxy(33+c,8+l);
             printf("%c", mapa[l][c]);
         }
@@ -126,27 +189,28 @@ void mostra_Mapa(){
         int i;
         gotoxy(32, 7);
         printf("%c", 201); // ╔
-        gotoxy(47, 15);
+        gotoxy(53, 18);
         printf("%c", 188); // ╝
-        gotoxy(47, 7);
+        gotoxy(53, 7);
         printf("%c", 187); // ╗
-        gotoxy(32, 15);
+        gotoxy(32, 18);
         printf("%c", 200); // ╚
-        for(i = 0 ; i <= 13 ; i++){
+        for(i = 0 ; i <= 19 ; i++){
             gotoxy(33+i, 7);
             printf("%c", 205); // ═
-            gotoxy(33+i, 15);
+            gotoxy(33+i, 18);
             printf("%c", 205); // ═
-            if(i<=6){
+            if(i<=9){
             gotoxy(32, 8+i);
             printf("%c", 186); // ║
-            gotoxy(47, 8+i);
+            gotoxy(53, 8+i);
             printf("%c", 186); // ║
             }
         }
     }
 
 main(){
+    menu();
     char tecla;
     int cont=0;
     px = 3;
@@ -165,10 +229,10 @@ main(){
                 case 'w': if(px>0){
                     px--;
                 } break;
-                case 's': if(px<6){
+                case 's': if(px<9){
                     px++;
                 } break;
-                case 'd': if(py<13){
+                case 'd': if(py<19){
                     py++;
                 } break;
                 case 'a': if(py>0){
@@ -177,14 +241,15 @@ main(){
             }
         }
         mapa[px][py] = 'P';
-        for(cont=0;cont<=16450000;cont++){
-            if(cont%16450000000==0){
-                movimentaMonstro();
-                tiroBarco();
-            }
+        if(cont%10==0){
+           movimentaMonstro();
+           tiroBarco();
+           cont=0;
         }
+        cont++;
         gotoxy(1, 1);
         printf("%d\n%d",x,y);
         verificaColisoes();
+        HideCursor();
     }while((tecla != 27)&&(flag != 1));
 }
