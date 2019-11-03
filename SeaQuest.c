@@ -6,6 +6,7 @@
 
 struct coordenada {
     int x, y, deslocamento;
+    char tipo;
 };
 
 void gotoxy (int x, int y){
@@ -16,17 +17,24 @@ SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),c);
 }
 
 char mapa[7][14];
-struct coordenada monstros[3];
+struct coordenada monstros[4];
 int px, py,flag=0;
 
 void randomizaMonstro(){
     int i,j,k=0,AUX,AUX1;
-    for(i=0;i<=2;){
-        AUX = (rand()%6);
-        monstros[i].x = AUX;
-        for(j=0;j<=2;j++){
-            if(AUX == monstros[j].x){
-                k++;
+    for(i=0;i<=3;){
+        if(i == 0){
+            monstros[i].x = 0;
+            monstros[i].tipo = 'B';
+        }
+        else{
+            monstros[i].tipo = 'T';
+            AUX = (rand()%7);
+            monstros[i].x = AUX;
+            for(j=0;j<=3;j++){
+                if((AUX == monstros[j].x)||(AUX == 0)){
+                    k++;
+                }
             }
         }
         if(k < 2){
@@ -47,24 +55,24 @@ void randomizaMonstro(){
 
 void movimentaMonstro(){
     int i;
-    for(i=0;i<=2;i++){
+    for(i=0;i<=3;i++){
         monstros[i].y += (monstros[i].deslocamento);
-        mapa[monstros[i].x][monstros[i].y] = 'T';
-        mapa[monstros[i].x][monstros[i].y - (monstros[i].deslocamento)] = '°';
-        if(monstros[i].y == 0){
-            monstros[i].deslocamento = 1;
+        if(i == 0){
+            mapa[monstros[i].x][monstros[i].y] = 'B';
         }
         else{
-            if(monstros[i].y == 13){
-                monstros[i].deslocamento = -1;
-            }
+            mapa[monstros[i].x][monstros[i].y] = 'T';
+        }
+        mapa[monstros[i].x][monstros[i].y - (monstros[i].deslocamento)] = '°';
+        if((monstros[i].y == 0)||(monstros[i].y == 13)){
+            monstros[i].deslocamento *= -1;
         }
     }
 }
 
 void verificaColisoes(){
     int i;
-    for(i=0;i<=2;i++){
+    for(i=0;i<=3;i++){
         if((monstros[i].x == px)&&(monstros[i].y == py)){
             flag = 1;
         }
@@ -116,6 +124,7 @@ void mostra_Mapa(){
 
 main(){
     char tecla;
+    int cont=0;
     px = py = 3;
     srand (time(NULL));
     inicia_Mapa();
@@ -124,24 +133,30 @@ main(){
     randomizaMonstro();
     do{
         mostra_Mapa();
-        tecla = getch();
-        mapa[px][py] = '°';
-        switch(tecla){
-            case 'w': if(px>0){
-                px--;
-            } break;
-            case 's': if(px<6){
-                px++;
-            } break;
-            case 'd': if(py<13){
-                py++;
-            } break;
-            case 'a': if(py>0){
-                py--;
-            } break;
+        if(kbhit()){
+            tecla = getch();
+            mapa[px][py] = '°';
+            switch(tecla){
+                case 'w': if(px>0){
+                    px--;
+                } break;
+                case 's': if(px<6){
+                    px++;
+                } break;
+                case 'd': if(py<13){
+                    py++;
+                } break;
+                case 'a': if(py>0){
+                    py--;
+                } break;
+            }
         }
         mapa[px][py] = 'P';
-        movimentaMonstro();
+        for(cont=0;cont<=16450000;cont++){
+            if(cont%16450000000==0){
+                movimentaMonstro();
+            }
+        }
         verificaColisoes();
     }while((tecla != 27)&&(flag != 1));
 }
