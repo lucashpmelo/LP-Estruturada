@@ -20,18 +20,28 @@ struct coordenada monstros[3];
 int px, py;
 
 void randomizaMonstro(){
-    int i;
+    int i=0,j,k=0,AUX,vet[3]={10,10,10};
     srand (time(NULL));
-    for(i=0;i<=2;i++){
-        monstros[i].x = (rand()%5) + 1;
-        if((i%2) == 0){
-            monstros[i].y = 13;
-            monstros[i].deslocamento = -1;
+    for(i=0;i<=2;){
+        AUX = (rand()%6);
+        monstros[i].x = AUX;
+        for(j=0;j<=2;j++){
+            if(AUX == monstros[j].x){
+                k++;
+            }
         }
-        else{
-            monstros[i].y = 0;
-            monstros[i].deslocamento = 1;
+        if(k < 2){
+            if((i%2) == 0){
+                monstros[i].y = 13;
+                monstros[i].deslocamento = -1;
+            }
+            else{
+                monstros[i].y = 0;
+                monstros[i].deslocamento = 1;
+            }
+            i++;
         }
+        k = 0;
     }
 }
 
