@@ -120,12 +120,10 @@ void verificaColisoes(){
 void tiroBarco(){
     char bomba='*';
     if(flag2==0){
-        if((monstros[0].y)==(py)){
-            x = monstros[0].x;
-            y = monstros[0].y;
-            mapa[x+1][y] = bomba;
-            flag2=1;
-        }
+        x = monstros[0].x;
+        y = monstros[0].y;
+        mapa[x+1][y] = bomba;
+        flag2=1;
     }
     else{
         if(x<=9){
