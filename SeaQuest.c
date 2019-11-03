@@ -8,7 +8,7 @@
 //#include <conio2.h>
 
 struct coordenada {
-    int x, y, deslocamento;
+    int x, y, deslocamentox, deslocamentoy;
     char tipo;
 };
 
@@ -52,7 +52,7 @@ void HideCursor()
 }
 
 char mapa[10][20],barra[21]={178, 178, 178, 178, 178, 178, 178, 178, 178, 178, 178, 178, 178, 178, 178, 178, 178, 178, 178, 178, '\0'};
-struct coordenada monstros[4];
+struct coordenada monstros[5];
 int px, py,x,y,mx,my,ContM=0,Oxi=200;flag=0,flag2=0,flag3=0;
 
 void randomizaMonstro(){
@@ -68,7 +68,7 @@ void randomizaMonstro(){
                 AUX = (rand()%10);
                 monstros[i].x = AUX;
                 for(j=0;j<=3;j++){
-                    if((AUX == monstros[j].x)||(AUX == 0)){
+                    if((AUX == monstros[j].x)||(AUX == 0)||(AUX == 1)){
                         k++;
                     }
                 }
@@ -78,33 +78,36 @@ void randomizaMonstro(){
             AUX1 = (rand()%2);
             if(AUX1 == 0){
                 monstros[i].y = 19;
-                monstros[i].deslocamento = -1;
+                monstros[i].deslocamentoy = -1;
             }
             else{
                 monstros[i].y = 0;
-                monstros[i].deslocamento = 1;
+                monstros[i].deslocamentoy = 1;
             }
             i++;
         }
         k = 0;
     }
+    monstros[4].x = 1;
+    monstros[4].y = 0;
+    monstros[4].tipo = 'S';
 }
 
 void movimentaMonstro(){
     int i;
     for(i=0;i<=3;i++){
-        monstros[i].y += (monstros[i].deslocamento);
+        monstros[i].y += (monstros[i].deslocamentoy);
         mapa[monstros[i].x][monstros[i].y] = monstros[i].tipo;
-        mapa[monstros[i].x][monstros[i].y - (monstros[i].deslocamento)] = '°';
+        mapa[monstros[i].x][monstros[i].y - (monstros[i].deslocamentoy)] = '°';
         if((monstros[i].y == 0)||(monstros[i].y == 19)){
-            monstros[i].deslocamento *= -1;
+            monstros[i].deslocamentoy *= -1;
         }
     }
 }
 
 void verificaColisoes(){
     int i;
-    for(i=0;i<=3;i++){
+    for(i=0;i<=4;i++){
         if((monstros[i].x == px)&&(monstros[i].y == py)){
             flag = 1;
         }
@@ -186,6 +189,80 @@ void Mergulhador(){
     printf("Mergulhadores:%d",ContM);
 }
 
+void monstroSeguindo(){
+    mapa[monstros[4].x][monstros[4].y] = '°';
+    if((monstros[4].x <= px)&&(monstros[4].y <= py)){
+        if((monstros[4].x - px)<=(monstros[4].y - py)){
+            monstros[4].x++;
+        }
+        else{
+            monstros[4].y++;
+        }
+    }
+    else{
+        if((monstros[4].x >= px)&&(monstros[4].y >= py)){
+            if((monstros[4].x - px)<=(monstros[4].y - py)){
+                monstros[4].x--;
+            }
+            else{
+                monstros[4].y--;
+            }
+        }
+
+        if((monstros[4].x >= px)&&(monstros[4].y <= py)){
+            if((monstros[4].x - px)<=(monstros[4].y - py)){
+                monstros[4].x--;
+            }
+            else{
+                monstros[4].y++;
+                }
+        }
+        else{
+            if((monstros[4].x - px)<=(monstros[4].y - py)){
+                monstros[4].x++;
+            }
+            else{
+                monstros[4].y--;
+                }
+            }
+        }
+        if((monstros[4].x == px)){
+            if(monstros[4].y >= py){
+                monstros[4].y--;
+            }
+            else{
+                monstros[4].y++;
+            }
+        }
+        if((monstros[4].y == py)){
+            if(monstros[4].x >= px){
+                monstros[4].x--;
+            }
+            else{
+                monstros[4].x++;
+            }
+        }
+        if((monstros[4].x >= px)&&(monstros[4].y >= py)){
+            if((monstros[4].x - px)<=(monstros[4].y - py)){
+                monstros[4].x--;
+            }
+            else{
+                monstros[4].y--;
+            }
+        }
+        if(monstros[4].x <= 0){
+            monstros[4].x = 0;
+            if(monstros[4].y < py){
+                monstros[4].y++;
+            }
+            else{
+                monstros[4].y--;
+            }
+        }
+        mapa[monstros[4].x][monstros[4].y] = monstros[4].tipo;
+    }
+
+
 void sea(){
 
     gotoxy(35, 8);
@@ -255,8 +332,8 @@ main(){
     menu();
     char tecla;
     int cont=0;
-    px = 3;
-    py = 6;
+    px = 5;
+    py = 9;
     srand (time(NULL));
     inicia_Mapa();
     mapa[px][py]='\0';
@@ -285,6 +362,7 @@ main(){
         mapa[px][py] = 'P';
         if(cont%10==0){
            movimentaMonstro();
+           monstroSeguindo();
            tiroBarco();
            contOxigenio();
            cont=0;
